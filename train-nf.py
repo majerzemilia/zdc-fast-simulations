@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import torch
 from torch import nn
 from torch import optim
@@ -99,7 +101,7 @@ def setup_data(particle_file, image_file, setup_com=False):
 
 
 if __name__ == "__main__":
-    with open("config.json") as f:
+    with open(Path(__file__).parent.resolve().as_posix() + "/config.json") as f:
         json_config_obj = json.load(f)
     config = FlowConfig(**json_config_obj)
     particle_file = config.BASE_DIR + config.DATA_DIR_SUFFIX + f"/data_{config.PARTICLE.lower()}_nonrandom_particles.npz"
@@ -128,7 +130,7 @@ if __name__ == "__main__":
     model = flow.to(config.device)
     optimizer = torch.optim.Adam(model.parameters(), lr=config.lr)
     print(model)
-    model_path = config.BASE_DIR + config.DATA_DIR_SUFFIX + f"/{config.model_name}_checkpoint.pt"
+    model_path = config.BASE_DIR + config.MODELS_DIR_SUFFIX + f"/{config.model_name}_checkpoint.pt"
     config.model_path = model_path
     print(f'Model path: {model_path}')
 

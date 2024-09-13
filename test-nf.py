@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import torch
 from torch import nn
 from torch import optim
@@ -97,7 +99,7 @@ def batch_mse(samples, imgs, config):
 if __name__ == "__main__":
     torch.set_printoptions(threshold=10_000)
 
-    with open("config.json") as f:
+    with open(Path(__file__).parent.resolve().as_posix() + "/config.json") as f:
         json_config_obj = json.load(f)
     config = FlowConfig(**json_config_obj)
     config.tail_bound = math.ceil(abs(math.log(config.ALPHA / (1.0 - config.ALPHA))))
@@ -159,7 +161,7 @@ if __name__ == "__main__":
         conds = data["conds"]
         samples = generate(model, config, conds)
         curr_photonsums = (conds[:, -1] * scaler.scale_[-1] + scaler.mean_[-1]).reshape((-1, 1))
-        samples = prepare_noised_samples(samples, curr_photonsums, config, scaler)
+        samples = prepare_noised_samples(samples, curr_photonsums, config)
         if config.save_responses:
             noised_samples = np.vstack((noised_samples, samples.reshape((-1, config.dim, config.dim))))
 
@@ -173,10 +175,7 @@ if __name__ == "__main__":
         print(f"Batch {i} done")
 
     final_ch_org = np.concatenate(final_ch_org)
-    final_ch_gen_sub_norecalc = np.concatenate(final_ch_gen_sub_norecalc)
-    final_ch_gen_sub_recalc = np.concatenate(final_ch_gen_sub_recalc)
-    final_ch_gen_floor_norecalc = np.concatenate(final_ch_gen_floor_norecalc)
-    final_ch_gen_floor_recalc = np.concatenate(final_ch_gen_floor_recalc)
+    final_ch_gens = (np.concatenate(final_ch_gen) for final_ch_gen in final_ch_gens)
 
     names = ["sub_norecalc", "sub_recalc", "floor_norecalc", "floor_recalc"]
     for k, final_ch_gen in enumerate(final_ch_gens):
@@ -201,5 +200,5 @@ if __name__ == "__main__":
         print(f"RMSE distance: {math.sqrt(mse)}\n")
 
     if config.save_responses:
-        data_save_fnm = config.BASE_DIR + config.DATA_DIR_SUFFIX + f"/{config.model_name}_generated_noisedsamples.npz"
+        data_save_fnm = config.BASE_DIR + config.MODELS_DIR_SUFFIX + f"/{config.model_name}_generated_noisedsamples.npz"
         np.savez(data_save_fnm, noised_samples)

@@ -31,8 +31,6 @@ def sum_channels_parallel_numpy(data):
     mask[:, half_x:, half_y:] = checkerboard[:, half_x:, half_y:]
     ch4 = (data * mask).sum(axis=1).sum(axis=1)
 
-    # assert all(ch1+ch2+ch3+ch4+ch5 == data.sum(axis=1).sum(axis=1))==True
-
     return zip(ch1, ch2, ch3, ch4, ch5)
 
 
@@ -66,8 +64,4 @@ def sum_channels_parallel_pytorch(data, args):
     mask[:, half_x:, half_y:] = checkerboard[:, half_x:, half_y:]
     ch4 = (data * mask).sum(axis=1).sum(axis=1)
 
-    # assert all(ch1+ch2+ch3+ch4+ch5 == data.sum(axis=1).sum(axis=1))==True
-    #print(ch1.item(), ch2.item(), ch3.item(), ch4.item(), ch5.item())
-
-    #return zip(ch1.item(), ch2.item(), ch3.item(), ch4.item(), ch5.item())
     return zip(ch1, ch2, ch3, ch4, ch5)

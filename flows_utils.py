@@ -13,18 +13,15 @@ from layers import InversionLayer, RandomPermutationLayer, BaseContext
 
 
 def logit(x):
-    """ returns logit of input """
     return torch.log(x / (1.0 - x))
 
 
 def logit_trafo(x, alpha):
-    """ implements logit trafo of MAF paper https://arxiv.org/pdf/1705.07057.pdf """
     local_x = alpha + (1. - 2.*alpha) * x
     return logit(local_x)
 
 
 def inverse_logit(x, alpha, clamp_low=0., clamp_high=1.):
-    """ inverts logit_trafo(), clips result if needed """
     return ((torch.sigmoid(x) - alpha) / (1. - 2.*alpha)).clamp_(clamp_low, clamp_high)
 
 

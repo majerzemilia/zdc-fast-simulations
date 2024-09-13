@@ -18,7 +18,6 @@ class ZDCDataset(Dataset):
         print(f"Noise mul: {noise_mul}")
 
     def __len__(self):
-        # assuming file was written correctly
         return len(self.x)
 
     def __getitem__(self, idx):

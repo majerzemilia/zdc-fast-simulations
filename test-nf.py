@@ -135,7 +135,7 @@ if __name__ == "__main__":
     model = flow.to(config.device)
     optimizer = torch.optim.Adam(model.parameters(), lr=config.lr)
     print(model)
-    model_path = config.BASE_DIR + config.DATA_DIR_SUFFIX + f"/{config.model_name}_checkpoint.pt"
+    model_path = config.BASE_DIR + config.MODELS_DIR_SUFFIX + f"/{config.model_name}_checkpoint.pt"
     config.model_path = model_path
     print(f'Model path: {model_path}')
 
@@ -200,5 +200,5 @@ if __name__ == "__main__":
         print(f"RMSE distance: {math.sqrt(mse)}\n")
 
     if config.save_responses:
-        data_save_fnm = config.BASE_DIR + config.MODELS_DIR_SUFFIX + f"/{config.model_name}_generated_noisedsamples.npz"
+        data_save_fnm = config.BASE_DIR + config.DATA_DIR_SUFFIX + f"/{config.model_name}_generated_noisedsamples.npz"
         np.savez(data_save_fnm, noised_samples)

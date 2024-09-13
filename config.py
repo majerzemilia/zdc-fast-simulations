@@ -4,7 +4,7 @@ from typing import Optional
 
 @dataclass
 class FlowConfig:
-    ALPHA: float
+    alpha: float
     cond_label_size: int
     hidden_size: int
     n_blocks: int
@@ -22,15 +22,15 @@ class FlowConfig:
     lr: float
     log_interval: int
     dim: int
-    PARTICLE: str
-    BASE_DIR: str
-    DATA_DIR_SUFFIX: str
-    MODELS_DIR_SUFFIX: str
+    particle: str
+    base_dir: str
+    data_dir_suffix: str
+    models_dir_suffix: str
     no_imgs_generated: int
     bnn_ps: bool
     original_ps_scaler: bool
     save_responses: bool
     tail_bound: Optional[int] = field(default=None)
-    MODEL_NAME: Optional[str] = field(default="")
+    model_name: Optional[str] = field(default="")
     model_path: Optional[str] = field(default="")
     device: Optional[str] = field(default="")

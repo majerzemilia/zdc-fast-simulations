@@ -71,7 +71,7 @@ def setup_flow(config):
 
 
 def prepare_model_name(config):
-    model_name = f"NF_CALO_NEUTRON_{config.PARTICLE}_HS{config.hidden_size}_NB{config.n_blocks}"
+    model_name = f"NF_CALO_NEUTRON_{config.particle.upper()}_HS{config.hidden_size}_NB{config.n_blocks}"
     if config.n_hidden > 1:
         model_name += f"_NH{config.n_hidden}"
     if config.noise_mul < 1:
@@ -82,6 +82,6 @@ def prepare_model_name(config):
         model_name += f"_com"
     if not config.cond_base:
         model_name += f"_stdbase"
-    if config.ALPHA != 1e-6:
-        model_name += f"_alpha{str(config.ALPHA)}"
+    if config.alpha != 1e-6:
+        model_name += f"_alpha{str(config.alpha)}"
     return model_name

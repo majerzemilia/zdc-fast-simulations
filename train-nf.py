@@ -104,12 +104,12 @@ if __name__ == "__main__":
     with open(Path(__file__).parent.resolve().as_posix() + "/config.json") as f:
         json_config_obj = json.load(f)
     config = FlowConfig(**json_config_obj)
-    particle_file = config.BASE_DIR + config.DATA_DIR_SUFFIX + f"/data_{config.PARTICLE.lower()}_nonrandom_particles.npz"
-    image_file = config.BASE_DIR + config.DATA_DIR_SUFFIX + f"/data_{config.PARTICLE.lower()}_nonrandom_responses.npz"
+    particle_file = (config.base_dir + config.data_dir_suffix + f"/data_{config.particle}_nonrandom_particles.npz")
+    image_file = config.base_dir + config.data_dir_suffix + f"/data_{config.particle}_nonrandom_responses.npz"
 
-    config.tail_bound = math.ceil(abs(math.log(config.ALPHA / (1.0 - config.ALPHA))))
+    config.tail_bound = math.ceil(abs(math.log(config.alpha / (1.0 - config.alpha))))
 
-    print(f"ALPHA: {config.ALPHA}, tail bound: {config.tail_bound}")
+    print(f"ALPHA: {config.alpha}, tail bound: {config.tail_bound}")
 
     model_name = prepare_model_name(config)
     config.model_name = model_name
@@ -118,7 +118,7 @@ if __name__ == "__main__":
     print("Using {}".format(config.device))
 
     particles, images = setup_data(particle_file, image_file, setup_com=True if config.cond_label_size == 12 else False)
-    train_dataloader, test_dataloader, _ = get_dataloader(images, particles, config.ALPHA,
+    train_dataloader, test_dataloader, _ = get_dataloader(images, particles, config.alpha,
                                                                full=False,
                                                                apply_logit=True,
                                                                device=config.device,
@@ -130,7 +130,7 @@ if __name__ == "__main__":
     model = flow.to(config.device)
     optimizer = torch.optim.Adam(model.parameters(), lr=config.lr)
     print(model)
-    model_path = config.BASE_DIR + config.MODELS_DIR_SUFFIX + f"/{config.model_name}_checkpoint.pt"
+    model_path = config.base_dir + config.models_dir_suffix + f"/{config.model_name}_checkpoint.pt"
     config.model_path = model_path
     print(f'Model path: {model_path}')
 

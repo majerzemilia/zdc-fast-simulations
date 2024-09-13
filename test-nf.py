@@ -53,7 +53,7 @@ def setup_train_particles(particle_file):
 
 
 def prepare_noised_samples(samples, curr_photonsums, config):
-    samples = ((torch.sigmoid(samples) - config.ALPHA) / (1. - 2. * config.ALPHA))
+    samples = ((torch.sigmoid(samples) - config.alpha) / (1. - 2. * config.alpha))
     samples = samples / (samples.abs().sum(dim=(-1), keepdims=True) + 1e-16)
     samples = samples.cpu().reshape((-1, config.dim * config.dim))
     noised_photonsums = curr_photonsums + config.dim * config.dim * 0.5 * config.noise_mul  # due to the random noise addition
@@ -102,15 +102,15 @@ if __name__ == "__main__":
     with open(Path(__file__).parent.resolve().as_posix() + "/config.json") as f:
         json_config_obj = json.load(f)
     config = FlowConfig(**json_config_obj)
-    config.tail_bound = math.ceil(abs(math.log(config.ALPHA / (1.0 - config.ALPHA))))
+    config.tail_bound = math.ceil(abs(math.log(config.alpha / (1.0 - config.alpha))))
 
-    print(f"ALPHA: {config.ALPHA}, tail bound: {config.tail_bound}")
+    print(f"ALPHA: {config.alpha}, tail bound: {config.tail_bound}")
 
     BNN = 'bnn' if config.bnn_ps else ''
     COM = 'com' if config.cond_label_size == 12 else ''
-    particle_file = config.BASE_DIR + config.DATA_DIR_SUFFIX + f"/data_nonrandom_particles_{BNN}{COM}photonsum.npz"
+    particle_file = config.base_dir + config.data_dir_suffix + f"/data_nonrandom_particles_{BNN}{COM}photonsum.npz"
     print(f"Conds data from file: {particle_file}")
-    image_file = config.BASE_DIR + config.DATA_DIR_SUFFIX + f"/data_{config.PARTICLE.lower()}_nonrandom_responses.npz"
+    image_file = config.base_dir + config.data_dir_suffix + f"/data_{config.particle}_nonrandom_responses.npz"
 
     model_name = prepare_model_name(config)
     config.model_name = model_name
@@ -121,8 +121,8 @@ if __name__ == "__main__":
     particles, images = setup_data(particle_file, image_file)
     if config.original_ps_scaler:
         particles_train_org = setup_train_particles(
-            particle_file=config.BASE_DIR + config.DATA_DIR_SUFFIX + f"/data_nonrandom_particles_{COM}photonsum.npz")
-    _, test_dataloader, scaler = get_dataloader(images, particles, config.ALPHA,
+            particle_file=config.base_dir + config.data_dir_suffix + f"/data_nonrandom_particles_{COM}photonsum.npz")
+    _, test_dataloader, scaler = get_dataloader(images, particles, config.alpha,
                                                 full=False,
                                                 apply_logit=False,
                                                 device=config.device,
@@ -135,7 +135,7 @@ if __name__ == "__main__":
     model = flow.to(config.device)
     optimizer = torch.optim.Adam(model.parameters(), lr=config.lr)
     print(model)
-    model_path = config.BASE_DIR + config.MODELS_DIR_SUFFIX + f"/{config.model_name}_checkpoint.pt"
+    model_path = config.base_dir + config.models_dir_suffix + f"/{config.model_name}_checkpoint.pt"
     config.model_path = model_path
     print(f'Model path: {model_path}')
 
@@ -200,5 +200,5 @@ if __name__ == "__main__":
         print(f"RMSE distance: {math.sqrt(mse)}\n")
 
     if config.save_responses:
-        data_save_fnm = config.BASE_DIR + config.DATA_DIR_SUFFIX + f"/{config.model_name}_generated_noisedsamples.npz"
+        data_save_fnm = config.base_dir + config.data_dir_suffix + f"/{config.model_name}_generated_noisedsamples.npz"
         np.savez(data_save_fnm, noised_samples)

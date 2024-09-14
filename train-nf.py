@@ -121,6 +121,7 @@ if __name__ == "__main__":
     train_dataloader, test_dataloader, _ = get_dataloader(images, particles, config.alpha,
                                                                full=False,
                                                                apply_logit=True,
+                                                               normalize=True,
                                                                device=config.device,
                                                                batch_size=config.batch_size,
                                                                with_noise=config.with_noise,

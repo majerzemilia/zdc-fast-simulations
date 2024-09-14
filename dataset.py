@@ -8,12 +8,13 @@ from flows_utils import logit_trafo
 
 
 class ZDCDataset(Dataset):
-    def __init__(self, x, y, alpha, apply_logit=True, with_noise=True, noise_mul=1):
+    def __init__(self, x, y, alpha, apply_logit=True, with_noise=True, normalize=True, noise_mul=1):
         self.x = x
         self.y = y
         self.alpha = alpha
         self.apply_logit = apply_logit
         self.with_noise = with_noise
+        self.normalize = normalize
         self.noise_mul = noise_mul
         print(f"Noise mul: {noise_mul}")
 
@@ -30,7 +31,8 @@ class ZDCDataset(Dataset):
         if self.with_noise:
             x = add_noise(x, self.noise_mul)
 
-        x = x / (x.sum(axis=(-1, -2), keepdims=True) + 1e-16)
+        if self.normalize:
+            x = x / (x.sum(axis=(-1, -2), keepdims=True) + 1e-16)
 
         if self.apply_logit:
             x = logit_trafo(x, self.alpha)
@@ -45,11 +47,11 @@ def add_noise(input_tensor, noise_mul):
     return input_tensor + noise
 
 
-def get_dataloader(x, y, alpha, device, full, batch_size=64, apply_logit=True, with_noise=False, noise_mul=1,
-                   y_scaler_fit=None):
+def get_dataloader(x, y, alpha, device, full, batch_size=64, apply_logit=True, with_noise=False, normalize=True,
+                   noise_mul=1, y_scaler_fit=None):
 
     kwargs = {'num_workers': 2, 'pin_memory': True} if device.type == 'cuda' else {}
-    dataset_kwargs = {'with_noise': with_noise, "noise_mul": noise_mul}
+    dataset_kwargs = {'with_noise': with_noise, 'normalize': normalize, 'noise_mul': noise_mul}
 
     if full:
         dataset = ZDCDataset(x, y, alpha, apply_logit=apply_logit)

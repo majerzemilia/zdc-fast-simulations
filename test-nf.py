@@ -86,9 +86,9 @@ def recalc(samples_, curr_photonsums):
 
 
 def update_result_lists(samples_lists, mses, final_ch_gens, imgs, config):
-    for i, arr in enumerate(samples_lists):
-        mses[i].extend(batch_mse(samples_lists[i], imgs, config))
-        ch_gen = np.array(list(sum_channels_parallel(samples_lists[i])))
+    for i, samples in enumerate(samples_lists):
+        mses[i].extend(batch_mse(samples, imgs, config))
+        ch_gen = np.array(list(sum_channels_parallel(samples)))
         final_ch_gens[i].append(ch_gen)
 
 
@@ -125,9 +125,10 @@ if __name__ == "__main__":
     _, test_dataloader, scaler = get_dataloader(images, particles, config.alpha,
                                                 full=False,
                                                 apply_logit=False,
+                                                with_noise=False,
+                                                normalize=False,
                                                 device=config.device,
                                                 batch_size=config.batch_size,
-                                                with_noise=config.with_noise,
                                                 noise_mul=config.noise_mul,
                                                 y_scaler_fit=particles_train_org if config.original_ps_scaler else None)
 
